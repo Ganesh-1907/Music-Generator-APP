@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MusicGen App</title>
+    <script>
+        async function generateMusic() {
+            const text = document.getElementById("textInput").value;
+            if (!text) {
+                alert("Please enter a music prompt!");
+                return;
+            }
+
+            document.getElementById("status").innerText = "Generating music... 🎵";
+            
+            const response = await fetch("/generate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ text })
+            });
+
+            const data = await response.json();
+            if (data.audio_url) {
+                document.getElementById("status").innerText = "Music generated! 🎶";
+                document.getElementById("audioPlayer").src = data.audio_url;
+                document.getElementById("audioPlayer").style.display = "block";
+                document.getElementById("downloadBtn").style.display = "block";
+            } else {
+                document.getElementById("status").innerText = "Error: " + data.error;
+            }
+        }
+    </script>
+</head>
+<body>
+    <h2>🎵 Generate Music from Text 🎵</h2>
+    <input type="text" id="textInput" placeholder="Enter a music style..." />
+    <button onclick="generateMusic()">Generate</button>
+
+    <p id="status"></p>
+    <audio id="audioPlayer" controls style="display: none;"></audio>
+    <a id="downloadBtn" href="/download" style="display: none;">Download Audio</a>
+</body>
+</html>
