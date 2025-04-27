@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Music Suggestion App</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    #result { margin-top: 20px; font-size: 18px; }
+  </style>
+</head>
+<body>
+
+  <h1>Music Suggestion</h1>
+  <input type="text" id="promptInput" placeholder="Enter your music mood..." />
+  <button onclick="findAnswer()">Get Music</button>
+
+  <div id="result"></div>
+
+  <script>
+    // Fetch the data.json from server
+    let data = [];
+
+    fetch('/data.json')
+      .then(response => response.json())
+      .then(json => {
+        data = json;
+      })
+      .catch(error => {
+        console.error('Error loading data:', error);
+      });
+
+    function findAnswer() {
+      const prompt = document.getElementById('promptInput').value.toLowerCase();
+      const promptWords = prompt.split(/\s+/);
+
+      let bestMatch = null;
+      let maxMatches = 0;
+
+      data.forEach(item => {
+        const questionWords = item.question.toLowerCase().split(/[\s,]+/);
+        const matches = promptWords.filter(word => questionWords.includes(word)).length;
+
+        if (matches > maxMatches) {
+          maxMatches = matches;
+          bestMatch = item;
+        }
+      });
+
+      const resultDiv = document.getElementById('result');
+      if (bestMatch) {
+        resultDiv.innerHTML = `<strong>Suggestion:</strong> ${bestMatch.answer}`;
+      } else {
+        resultDiv.innerHTML = "Sorry, no matching music found.";
+      }
+    }
+  </script>
+
+</body>
+</html>

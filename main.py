@@ -24,10 +24,11 @@ def generate_audio():
 
         # Generate music
         music = synthesiser(text_prompt, forward_params={"do_sample": True})
+        print(music,'Music Ganesh')
 
         if "audio" in music and len(music["audio"]) > 0:
             # Save as WAV file
-            file_path = "musicgen_out1.wav"
+            file_path = "musicgen_out.wav"
             wav.write(file_path, rate=music["sampling_rate"], data=np.array(music["audio"]))
 
             return jsonify({"message": "Audio generated successfully!", "audio_url": file_path})
@@ -39,7 +40,7 @@ def generate_audio():
 
 @app.route("/download")
 def download_audio():
-    file_path = "musicgen_out1.wav"
+    file_path = "musicgen_out.wav"
     if os.path.exists(file_path):
         return send_file(file_path, as_attachment=True)
     return jsonify({"error": "File not found"}), 404

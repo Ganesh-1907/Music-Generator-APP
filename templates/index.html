@@ -4,6 +4,74 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MusicGen App</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.2);
+            width: 90%;
+            max-width: 400px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            outline: none;
+            text-align: center;
+        }
+        button {
+            background: #ff6600;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #ff4500;
+        }
+        #status {
+            margin-top: 15px;
+            font-size: 1.2rem;
+        }
+        audio, a {
+            margin-top: 15px;
+            display: block;
+        }
+        #downloadBtn {
+            text-decoration: none;
+            background: #00c853;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            display: inline-block;
+            transition: 0.3s;
+        }
+        #downloadBtn:hover {
+            background: #009624;
+        }
+    </style>
     <script>
         async function generateMusic() {
             const text = document.getElementById("textInput").value;
@@ -11,7 +79,6 @@
                 alert("Please enter a music prompt!");
                 return;
             }
-
             document.getElementById("status").innerText = "Generating music... 🎵";
             
             const response = await fetch("/generate", {
@@ -19,12 +86,16 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ text })
             });
-
+            
             const data = await response.json();
             if (data.audio_url) {
                 document.getElementById("status").innerText = "Music generated! 🎶";
-                document.getElementById("audioPlayer").src = data.audio_url;
-                document.getElementById("audioPlayer").style.display = "block";
+                
+                const audioPlayer = document.getElementById("audioPlayer");
+                audioPlayer.src = "/download?" + new Date().getTime();
+                audioPlayer.style.display = "block";
+                audioPlayer.load();
+                
                 document.getElementById("downloadBtn").style.display = "block";
             } else {
                 document.getElementById("status").innerText = "Error: " + data.error;
@@ -33,12 +104,13 @@
     </script>
 </head>
 <body>
-    <h2>🎵 Generate Music from Text 🎵</h2>
-    <input type="text" id="textInput" placeholder="Enter a music style..." />
-    <button onclick="generateMusic()">Generate</button>
-
-    <p id="status"></p>
-    <audio id="audioPlayer" controls style="display: none;"></audio>
-    <a id="downloadBtn" href="/download" style="display: none;">Download Audio</a>
+    <h2>🎶 AI Music Generator 🎶</h2>
+    <div class="container">
+        <input type="text" id="textInput" placeholder="Enter a music style..." />
+        <button onclick="generateMusic()">Generate</button>
+        <p id="status"></p>
+        <audio id="audioPlayer" controls style="display: none;"></audio>
+        <a id="downloadBtn" href="/download" style="display: none;">Download Audio</a>
+    </div>
 </body>
 </html>
